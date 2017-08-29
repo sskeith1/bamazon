@@ -39,7 +39,7 @@ function start() {
 				addProducts();
 			} else {
 				console.log("Ok then! See you next time!");
-				//QUIT SCRIPT SOMEHOW?!?!?!
+				{ break; }
 			}
 		})
 }
@@ -78,7 +78,7 @@ function addProducts() {
 					if (err) throw err;
 					console.log("Your item has been added successfully!");
 					console.log("======================================");
-					start();
+					connection.end();
 				}
 			)
 		});
