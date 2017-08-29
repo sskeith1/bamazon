@@ -50,7 +50,7 @@ function startTransaction() {
 			} else {
 				console.log("Ok then! See you next time!");
 				console.log("======================================");
-				// connection.end();
+				connection.end();
 			}
 		})
 };
@@ -86,7 +86,7 @@ function addToBasket() {
 
 
 
-					if (quantity < stock) {
+					if (quantity <= stock) {
 						
 							if (quantity>1) {
 									console.log("\n You have purchased " + quantity + " " + product + "s.");
@@ -102,40 +102,46 @@ function addToBasket() {
 
 							
 							connection.query(
-							"UPDATE products SET ? WHERE ?", {
+							"UPDATE products SET ? WHERE ?", [
+							{
 								stock_quantity: remaining_stock
-							}); 
-
-							inquirer
-								.prompt({
-									name: "goAgain",
-									type: "confirm",
-									message: "Do you wish to buy anything else today?"
-								}).then(function(answer) {
-									if (answer.goAgain === true) {
-										console.log("Perfect! Initializing...");
-										// afterConnection();
-										addToBasket();
-									} else {
-										console.log("Ok then! See you next time!");
-										console.log("======================================");
-										connection.end();
-									}
-								});
-							
-
+							},
+							{
+								item_id: id
+							}
+							], function(){
+								anotherTransaction()
+							})	
 					} else {
 						
 							console.log("You have selected too many! Please retry your purchase.");
 							addToBasket();
 					};
-
-							
-					
-
 				});
-
 		});
+};
+
+function anotherTransaction() {
+	inquirer
+		.prompt({
+			name: "goAgain",
+			type: "confirm",
+			message: "Do you wish to buy anything else today?"
+		}).then(function(answer) {
+			if (answer.goAgain === true) {
+				console.log("Perfect! Initializing...");
+				connection.query("SELECT * FROM products", function(err, res) {
+					if (err) throw err;
+						console.log(res);
+						addToBasket();
+					});
+				
+			} else {
+				console.log("Ok then! See you next time!");
+				console.log("======================================");
+				connection.end();
+			}
+		})
 };
 
 
