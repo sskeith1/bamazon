@@ -6,6 +6,7 @@ var product;
 var department;
 var price;
 var quantity;
+var rawTotal;
 var total;
 var stock;
 var remaining_stock;
@@ -49,24 +50,28 @@ function startTransaction() {
 			} else {
 				console.log("Ok then! See you next time!");
 				console.log("======================================");
-				connection.end();
+				// connection.end();
 			}
 		})
 };
 
 function addToBasket() {
 	inquirer
-		.prompt({
+		.prompt([
+		{
 			name: "id",
 			type: "input",
 			message: "What is the item ID number of the item you wish to purchase?"
-		},{
+		},
+		{
 			name: "quantity",
 			type: "input",
 			message: "How many would you like to purchase today?"
-		}).then(function(answer) {
+		}
+		]).then(function(answer) {
+		
 			connection.query(
-				"SELECT item_id, product_name, price, stock_quantity FROM products WHERE item_id = " + answer.id, function(err,results) {
+				"SELECT item_id, product_name, price, stock_quantity FROM products WHERE item_id = " + answer.id, function(err, results) {
 					if(err) throw err;
 						id = results[0].item_id;
 						product = results[0].product_name;
@@ -76,10 +81,13 @@ function addToBasket() {
 
 						quantity = answer.quantity;
 							remaining_stock = stock - quantity;
-							total = price * quantity;
+							rawTotal = price * quantity;
+							total = rawTotal.toFixed(2);
+
 
 
 					if (quantity < stock) {
+						
 							if (quantity>1) {
 									console.log("\n You have purchased " + quantity + " " + product + "s.");
 								} else if (quantity = 1) {
@@ -104,9 +112,9 @@ function addToBasket() {
 									type: "confirm",
 									message: "Do you wish to buy anything else today?"
 								}).then(function(answer) {
-									if (answer.buyOrNo === true) {
+									if (answer.goAgain === true) {
 										console.log("Perfect! Initializing...");
-										afterConnection();
+										// afterConnection();
 										addToBasket();
 									} else {
 										console.log("Ok then! See you next time!");
@@ -117,10 +125,10 @@ function addToBasket() {
 							
 
 					} else {
-
+						
 							console.log("You have selected too many! Please retry your purchase.");
 							addToBasket();
-							};
+					};
 
 							
 					

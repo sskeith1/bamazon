@@ -78,7 +78,7 @@ function addProducts() {
 					if (err) throw err;
 					console.log("Your item has been added successfully!");
 					console.log("======================================");
-					connection.end();
+					connection.end()
 				}
 			)
 		});
